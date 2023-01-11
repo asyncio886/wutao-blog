@@ -1,0 +1,68 @@
+
+service-base-url: 127.0.0.1
+
+spring:
+  banner:
+    location: classpath:banner.txt
+  datasource:
+    url: jdbc:mysql://${service-base-url}:3306/blog
+    password: xxxx
+    username: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: ${service-base-url}
+    password: xxxxx
+  rabbitmq:
+    username: root
+    password: xx
+    host: ${service-base-url}
+    port: 5673
+  mail:
+    host: xxxxx
+    username: xxxxxx
+    password: xxxxxx
+  thymeleaf:
+    prefix: classpath:/templates/
+  servlet:
+    multipart:
+      max-file-size: 3MB
+es:
+  url: http://${service-base-url}:9200
+
+cos:
+  secret-id: xxxxxxx
+  secret-key: xxxxxx
+  bucket-name: xxxxxx
+  region: xxxxxxx
+  user-avatar-path: /resource/avatar
+  article-picture-path: /resource/article-pic
+  base-url: xxxxxxx
+
+blog-interceptors:
+  need-login-path:
+    - '/api/admin/**'
+    - '/api/like/**'
+    - '/api/comment/upload'
+    - '/api/reply/upload'
+  need-admin-path:
+    - '/api/admin/**'
+  ip-attack-properties:
+    - interval: 60
+      max-times: 5
+      ban: true
+      ban-time: 1 #ban一天
+      path:
+        - '/api/user/getCode'
+    - interval: 10
+      max-times: 10
+      ban: false
+      path:
+        - "/api/like/**"
+    - interval: 60
+      max-times: 20
+      ban: true
+      ban-time: 2
+      path:
+        - '/api/comment/upload'
+        - '/api/reply/upload'
+

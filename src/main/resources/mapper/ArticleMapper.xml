@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.wytbook.mapper.ArticleMapper">
+
+    <resultMap id="ArticleBaseMap" type="top.wytbook.dto.SimpleArticle">
+            <id property="aid" column="aid" jdbcType="BIGINT"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="createTime" column="a_create_time" jdbcType="BIGINT"/>
+            <result property="modifiedTime" column="modified_time" jdbcType="BIGINT"/>
+            <result property="likeCount" column="like_count" jdbcType="INTEGER"/>
+            <result property="watchCount" column="watch_count" jdbcType="INTEGER"/>
+            <result property="tagId" column="tag_id" jdbcType="BIGINT"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="ownUid" column="own_uid" jdbcType="BIGINT"/>
+    </resultMap>
+    <resultMap id="UserBaseMap" type="top.wytbook.dto.NormalUser">
+        <id property="uid" column="uid" jdbcType="BIGINT"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="createTime" column="u_create_time" jdbcType="BIGINT"/>
+        <result property="userType" column="user_type" jdbcType="TINYINT"/>
+    </resultMap>
+    <resultMap id="simpleArticleMap" type="top.wytbook.dto.SimpleArticleWithAuthorInfo">
+        <association property="simpleArticle" resultMap="ArticleBaseMap"/>
+        <association property="userInfo" resultMap="UserBaseMap"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        aid,title,content,
+        create_time,modified_time,like_count,
+        watch_count,tag_id,description,
+        own_uid
+    </sql>
+    <sql id="GetSimpleArticle_Column_List">
+        aid,title,
+        a.create_time as a_create_time,modified_time,like_count,
+        watch_count,tag_id,description,
+        own_uid,uid,username,
+        u.create_time as u_create_time,user_type
+    </sql>
+
+    <select id="getSimpleArticleWithTagId" resultMap="simpleArticleMap">
+        select <include refid="GetSimpleArticle_Column_List"/>
+        from t_article as a left join t_user as u on a.own_uid = u.uid
+        where a.tag_id = #{tagId}
+        order by a.create_time desc
+        limit #{start}, #{limit}
+    </select>
+    <select id="getNormalArticles" resultMap="simpleArticleMap">
+        select <include refid="GetSimpleArticle_Column_List"/>
+        from t_article as a left join t_user as u on a.own_uid = u.uid
+        order by a.create_time desc
+        limit #{start}, #{limit}
+    </select>
+    <select id="getHostArticles" resultMap="simpleArticleMap">
+        select <include refid="GetSimpleArticle_Column_List"/>
+        from t_article as a left join t_user as u on a.own_uid = u.uid
+        order by a.like_count desc , a.watch_count desc
+        limit 0, #{size}
+    </select>
+</mapper>

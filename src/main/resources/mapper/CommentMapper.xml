@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.wytbook.mapper.CommentMapper">
+
+    <resultMap id="CommentPartResultMap" type="top.wytbook.db.Comment">
+            <id property="cid" column="cid" jdbcType="BIGINT"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="authorUid" column="author_uid" jdbcType="INTEGER"/>
+            <result property="createTime" column="c_create_time" jdbcType="BIGINT"/>
+            <result property="fromAid" column="from_aid" jdbcType="BIGINT"/>
+    </resultMap>
+    <resultMap id="UserBaseMap" type="top.wytbook.dto.NormalUser">
+        <id property="uid" column="uid" jdbcType="BIGINT"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="createTime" column="u_create_time" jdbcType="BIGINT"/>
+        <result property="userType" column="user_type" jdbcType="TINYINT"/>
+    </resultMap>
+    <resultMap id="CommentsWithUserInfo" type="top.wytbook.dto.CommentWithAuthorInfo">
+        <association property="userInfo" resultMap="UserBaseMap"/>
+        <association property="comment" resultMap="CommentPartResultMap"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        cid,content,author_uid,
+        c.create_time as c_create_time,from_aid,
+        uid,username,
+        u.create_time as u_create_time,user_type
+    </sql>
+    <select id="getCommentsWithUserInfo" resultMap="CommentsWithUserInfo">
+        select <include refid="Base_Column_List"/>
+        from t_comment as c left join t_user as u
+        on c.author_uid = u.uid
+        where c.from_aid = #{aid}
+        order by c.create_time desc
+        limit #{start}, #{limit}
+    </select>
+</mapper>

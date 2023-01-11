@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.wytbook.mapper.AdminUserMapper">
+
+    <resultMap id="BaseResultMap" type="top.wytbook.db.AdminUser">
+            <id property="uid" column="uid" jdbcType="BIGINT"/>
+            <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="githubLink" column="github_link" jdbcType="VARCHAR"/>
+            <result property="qqLink" column="qq_link" jdbcType="VARCHAR"/>
+            <result property="twitterLink" column="twitter_link" jdbcType="VARCHAR"/>
+            <result property="weiboLink" column="weibo_link" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        uid,avatar,description,
+        github_link,qq_link,twitter_link,
+        weibo_link
+    </sql>
+</mapper>

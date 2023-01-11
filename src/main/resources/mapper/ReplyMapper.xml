@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.wytbook.mapper.ReplyMapper">
+
+    <resultMap id="ReplyResultMap" type="top.wytbook.db.Reply">
+            <id property="rid" column="rid" jdbcType="BIGINT"/>
+            <result property="fromCid" column="from_cid" jdbcType="BIGINT"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="replyToUid" column="reply_to_uid" jdbcType="BIGINT"/>
+            <result property="createTime" column="r_create_time" jdbcType="BIGINT"/>
+            <result property="authorUid" column="author_uid" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <resultMap id="AuthorUserBaseMap" type="top.wytbook.dto.NormalUser">
+        <id property="uid" column="a_uid" jdbcType="BIGINT"/>
+        <result property="username" column="a_username" jdbcType="VARCHAR"/>
+        <result property="createTime" column="a_create_time" jdbcType="BIGINT"/>
+        <result property="userType" column="a_user_type" jdbcType="TINYINT"/>
+    </resultMap>
+    <resultMap id="ReplyToBaseMap" type="top.wytbook.dto.NormalUser">
+        <id property="uid" column="u_uid" jdbcType="BIGINT"/>
+        <result property="username" column="u_username" jdbcType="VARCHAR"/>
+        <result property="createTime" column="u_create_time" jdbcType="BIGINT"/>
+        <result property="userType" column="u_user_type" jdbcType="TINYINT"/>
+    </resultMap>
+    <resultMap id="ReplyBaseMap" type="top.wytbook.dto.ReplyWithReplyToAndAuthor">
+        <association property="authorInfo" resultMap="AuthorUserBaseMap"/>
+        <association property="replyToInfo" resultMap="ReplyToBaseMap"/>
+        <association property="reply" resultMap="ReplyResultMap"/>
+    </resultMap>
+    <sql id="Replies_Column_List">
+        rid,from_cid,content,author_uid,
+        reply_to_uid,r.create_time as r_create_time,
+        a.uid as a_uid,a.username as a_username,
+        a.create_time as a_create_time,a.user_type as a_user_type,
+        u.uid as u_uid,u.username as u_username,
+        u.create_time as u_create_time,u.user_type as u_user_type
+    </sql>
+    <select id="getRepliesByCid" resultMap="ReplyBaseMap">
+        select <include refid="Replies_Column_List"/> from
+        t_reply as r left join t_user as a on r.author_uid = a.uid
+        left join t_user as u on r.reply_to_uid = u.uid
+        where r.from_cid = #{cid}
+        order by r.create_time
+        limit #{start}, #{limit}
+    </select>
+
+</mapper>
